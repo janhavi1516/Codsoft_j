@@ -1,0 +1,87 @@
+import tkinter as tk
+from tkinter import messagebox
+
+def add(x, y):
+    """Add two numbers."""
+    return x + y
+
+def subtract(x, y):
+    """Subtract two numbers."""
+    return x - y
+
+def multiply(x, y):
+    """Multiply two numbers."""
+    return x * y
+
+def divide(x, y):
+    """Divide two numbers, checking for division by zero."""
+    if y == 0:
+        return "Error: Division by zero is not allowed."
+    return x / y
+
+def calculate():
+    """Handle the calculation based on user input."""
+    try:
+        num1 = float(num1_entry.get())
+        num2 = float(num2_entry.get())
+    except ValueError:
+        messagebox.showerror("Input Error", "Please enter valid numeric values.")
+        return
+
+    choice = operation_var.get()
+
+    if choice == "1":
+        result = add(num1, num2)
+        operation = "+"
+    elif choice == "2":
+        result = subtract(num1, num2)
+        operation = "-"
+    elif choice == "3":
+        result = multiply(num1, num2)
+        operation = "*"
+    elif choice == "4":
+        result = divide(num1, num2)
+        operation = "/"
+    else:
+        messagebox.showerror("Selection Error", "Please select a valid operation.")
+        return
+
+    if isinstance(result, str):  # Check if result is an error message
+        messagebox.showerror("Calculation Error", result)
+    else:
+        result_label.config(text=f"Result: {num1} {operation} {num2} = {result:.2f}")
+
+
+root = tk.Tk()
+root.title("Simple Calculator")
+
+
+root.columnconfigure(0, weight=1)
+root.columnconfigure(1, weight=2)
+root.rowconfigure(7, weight=1)
+
+
+tk.Label(root, text="Number 1:", font=('Arial', 12)).grid(row=0, column=0, padx=10, pady=10, sticky="e")
+num1_entry = tk.Entry(root, font=('Arial', 12))
+num1_entry.grid(row=0, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Number 2:", font=('Arial', 12)).grid(row=1, column=0, padx=10, pady=10, sticky="e")
+num2_entry = tk.Entry(root, font=('Arial', 12))
+num2_entry.grid(row=1, column=1, padx=10, pady=10)
+
+tk.Label(root, text="Select Operation:", font=('Arial', 12)).grid(row=2, column=0, padx=10, pady=10, sticky="e")
+
+operation_var = tk.StringVar(value="1")
+tk.Radiobutton(root, text="Addition", variable=operation_var, value="1", font=('Arial', 12)).grid(row=2, column=1, padx=10, pady=5, sticky="w")
+tk.Radiobutton(root, text="Subtraction", variable=operation_var, value="2", font=('Arial', 12)).grid(row=3, column=1, padx=10, pady=5, sticky="w")
+tk.Radiobutton(root, text="Multiplication", variable=operation_var, value="3", font=('Arial', 12)).grid(row=4, column=1, padx=10, pady=5, sticky="w")
+tk.Radiobutton(root, text="Division", variable=operation_var, value="4", font=('Arial', 12)).grid(row=5, column=1, padx=10, pady=5, sticky="w")
+
+calculate_button = tk.Button(root, text="Calculate", command=calculate, font=('Arial', 12), bg='#4CAF50', fg='white', relief='raised')
+calculate_button.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+result_label = tk.Label(root, text="Result:", font=('Arial', 12))
+result_label.grid(row=7, column=0, columnspan=2, padx=10, pady=10)
+
+
+root.mainloop()
