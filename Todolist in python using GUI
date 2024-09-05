@@ -1,0 +1,119 @@
+import tkinter as tk
+from tkinter import font as tkfont
+
+def add_task():
+    """Add a new task to the list."""
+    task = task_var.get().strip()
+    if task:
+        if task not in tasks_listbox.get(0, "end"):
+            tasks_listbox.insert("end", task)
+            clear_entries()
+            update_message("Task added!")
+        else:
+            update_message("Task already exists.")
+    else:
+        update_message("Enter a task.")
+
+def update_task():
+    """Update the selected task in the list."""
+    selected_idx = tasks_listbox.curselection()
+    if selected_idx:
+        new_task = task_var.get().strip()
+        if new_task:
+            if new_task not in tasks_listbox.get(0, "end"):
+                tasks_listbox.delete(selected_idx[0])
+                tasks_listbox.insert(selected_idx[0], new_task)
+                clear_entries()
+                update_message("Task updated!")
+            else:
+                update_message("Task already exists.")
+        else:
+            update_message("Enter a task.")
+    else:
+        update_message("Select a task to update.")
+
+def delete_task():
+    """Delete the selected task from the list."""
+    selected_idx = tasks_listbox.curselection()
+    if selected_idx:
+        tasks_listbox.delete(selected_idx[0])
+        update_message("Task deleted!")
+    else:
+        update_message("Select a task to delete.")
+
+def update_message(message):
+    """Update the status message at the bottom of the window."""
+    status_var.set(message)
+    root.after(1500, lambda: status_var.set(""))
+
+def clear_entries():
+    """Clear the input field."""
+    task_var.set("")
+
+def on_task_select(event):
+    """Populate the input field with the selected task."""
+    selected_idx = tasks_listbox.curselection()
+    if selected_idx:
+        task_var.set(tasks_listbox.get(selected_idx[0]))
+
+
+root = tk.Tk()
+root.title("To-Do List")
+root.geometry("700x550")
+root.config(bg="#e0f2f1")
+
+title_font = tkfont.Font(family="Helvetica Neue", size=24, weight="bold")
+label_font = tkfont.Font(family="Helvetica Neue", size=12)
+button_font = tkfont.Font(family="Helvetica Neue", size=10, weight="bold")
+
+tk.Label(root, text="To-Do List", font=title_font, bg="#e0f2f1", fg="#00796b").pack(pady=10)
+
+
+input_frame = tk.Frame(root, padx=15, pady=10, bg="#ffffff", bd=2, relief="groove")
+input_frame.pack(pady=15, fill="x", padx=20)
+
+task_var = tk.StringVar()
+tk.Label(input_frame, text="Task:", font=label_font, bg="#ffffff", fg="#004d40").pack(side="left", padx=10)
+tk.Entry(input_frame, textvariable=task_var, width=30, font=label_font, bd=2, relief="sunken").pack(side="left", padx=10)
+
+
+button_frame = tk.Frame(input_frame, bg="#ffffff")
+button_frame.pack(side="right", padx=10)
+
+
+def on_enter(event):
+    event.widget.config(bg="#c8e6c9")
+
+def on_leave(event):
+    event.widget.config(bg=event.widget.original_bg)
+
+def create_button(text, command, color):
+    button = tk.Button(button_frame, text=text, command=command, font=button_font, relief="flat", bg=color, fg="white", padx=10, pady=5)
+    button.original_bg = color
+    button.bind("<Enter>", on_enter)
+    button.bind("<Leave>", on_leave)
+    button.pack(side="left", padx=5)
+    return button
+
+create_button("Add", add_task, "#4CAF50")
+create_button("Update", update_task, "#FFC107")
+create_button("Delete", delete_task, "#F44336")
+
+
+listbox_frame = tk.Frame(root, bg="#e0f2f1")
+listbox_frame.pack(pady=15, padx=20, fill="both", expand=True)
+
+tasks_listbox = tk.Listbox(listbox_frame, width=60, height=15, font=label_font, bd=2, relief="sunken", bg="#ffffff", selectbackground="#a5d6a7")
+tasks_listbox.pack(side="left", fill="both", expand=True)
+
+scrollbar = tk.Scrollbar(listbox_frame, orient="vertical", command=tasks_listbox.yview)
+scrollbar.pack(side="right", fill="y")
+tasks_listbox.config(yscrollcommand=scrollbar.set)
+
+tasks_listbox.bind('<<ListboxSelect>>', on_task_select)
+
+
+status_var = tk.StringVar()
+tk.Label(root, textvariable=status_var, font=label_font, bg="#e0f2f1", fg="#004d40").pack(pady=10)
+
+root.mainloop()
